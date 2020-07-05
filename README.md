@@ -1,1 +1,1 @@
-# GNN-Link-Prediction-in-Graphs
+# GCN-Link-Prediction-in-Graphs
