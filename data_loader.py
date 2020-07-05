@@ -10,16 +10,20 @@ def load_data(dataset):
     obj = []
     for i in files:
         with open(f"data/ind.{dataset}.{i}", 'rb') as f:
-            obj.append(pkl.load(f))
+            if sys.version_info > (3, 0):
+                obj.append(pkl.load(f, encoding='latin1'))
+            else:
+                obj.append(pkl.load(f))
     
     x, tx, allx, graph = tuple(obj)
     index = []
-    for line in open(f"data/ind.{dataset}.test.index"):
-        index.append(int(line.strip()))
+    with open(f"data/ind.{dataset}.test.index") as ff:
+        for line in ff:
+            index.append(int(line.strip()))
     test_idx = np.sort(index)
 
-    features = sp.vstack((allx, x)).tolil()
-    features[test_idx, :] = features[index, :]
-    adj_mat = nx.adj_mat(nx.from_dict_of_lists(graph))
+    features = sp.vstack((allx, tx)).tolil()
+    features[index, :] = features[test_idx, :]
+    adj_mat = networkx.adjacency_matrix(networkx.from_dict_of_lists(graph))
 
-    return adj, features
+    return adj_mat, features
